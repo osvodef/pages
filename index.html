@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Carto Performance Inspector</title>
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+        <link rel="shortcut icon" href="favicon.png" />
+
+        <link rel="stylesheet" href="./mapbox-gl.css" />
+        <link rel="stylesheet" href="./style.css" />
+    </head>
+
+    <body>
+        <div id="map"></div>
+        <div id="panel">
+            <div id="controls">
+                <div>
+                    <input type="checkbox" id="tile-boundaries" name="tile-boundaries" checked />
+                    <label for="tile-boundaries">Show tile boundaries</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="collision-boxes" name="collision-boxes" />
+                    <label for="collision-boxes">Show collision boxes</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="overdraw-inspector" name="overdraw-inspector" />
+                    <label for="overdraw-inspector">Show overdraw inspector</label>
+                </div>
+            </div>
+            <div id="layers-container"></div>
+        </div>
+
+        <script src="https://unpkg.com/stats.js@0.17.0/build/stats.min.js"></script>
+        <script src="./mapbox-gl-dev.js"></script>
+        <script src="./index.js"></script>
+    </body>
+</html>
