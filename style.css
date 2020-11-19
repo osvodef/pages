@@ -26,8 +26,49 @@ body {
     overflow: auto;
 }
 
-#controls {
+.mapstyle-button {
+    display: block;
+    height: 40px;
+    border: 1px solid black;
+    margin: 10px 10px 0 10px;
+    line-height: 40px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.mapstyle-button:last-child {
+    margin-bottom: 10px;
+}
+
+.mapstyle-button.active {
+    background-color: black;
+    color: white;
+    cursor: initial;
+    pointer-events: none;
+}
+
+.mapstyle-button.add {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+#add-mapstyle-input {
+    display: none;
+}
+
+#controls,
+#scale {
     padding: 10px;
+}
+
+#scale {
+    display: flex;
+}
+
+#scale-input {
+    cursor: pointer;
+    flex-grow: 1;
+    margin-right: 10px;
 }
 
 .layers-header {

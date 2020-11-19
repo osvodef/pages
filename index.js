@@ -1,10 +1,14 @@
 const accessToken = 'Fcl36Sb9lU5ynhsN8ofA47SqaVDPAlnG5b669b1f243a48e40fd719fef7b80ecbe75a54da';
-const styleUrl = `https://vapi.bleeding.mapcreator.io/styles/Base%20Cartotest1.json?access_token=${accessToken}`;
+const mapboxAccessToken =
+    'pk.eyJ1Ijoib3N2b2RlZiIsImEiOiJjazNwbjNlMWUwNGtkM2Vtb253MjM3cXhvIn0.A9Qebgu0gf2BlndYixeeOw';
 
 const layersContainer = document.querySelector('#layers-container');
+const stylesContainer = document.querySelector('#mapstyle-list');
 const disabledLayers = new Set();
 
-let style = {};
+const styles = [];
+let styleIndex = 0;
+let layersDimmed = false;
 
 const stats = new window.Stats();
 const vtxPanel = stats.addPanel(new window.Stats.Panel('vtx', '#f8f', '#212'));
@@ -18,20 +22,24 @@ window.drawCount = 0;
 run();
 
 async function run() {
-    style = await fetch(styleUrl).then(response => response.json());
+    await loadInitialStyle();
+
+    mapboxgl.accessToken = mapboxAccessToken;
 
     const map = new mapboxgl.Map({
         container: 'map',
         zoom: 4,
         center: [13.1, 48.23],
-        style,
         hash: true,
         transformRequest: url => {
-            return {
-                url: `${url}?access_token=${accessToken}`,
-            };
+            return { url: transformResourceUrl(url) };
         },
     });
+
+    window.map = map;
+
+    switchStyle(0);
+    rerenderStyles();
 
     map.on('render', e => {
         const { vtxCounts, drawCount } = window;
@@ -59,10 +67,49 @@ async function run() {
         map.showOverdrawInspector = e.target.checked;
     });
 
-    window.map = map;
+    document.querySelector('#add-mapstyle-input').addEventListener('input', async e => {
+        const file = e.target.files[0];
+
+        const name = file.name.split('.').slice(0, -1).join('.');
+        const style = JSON.parse(await file.text());
+
+        addStyle(name, style);
+        switchStyle(styles.length - 1);
+        rerenderStyles();
+    });
+
+    document.querySelector('#scale-input').addEventListener('input', e => {
+        const scale = Number(e.target.value);
+        map.setScale(scale);
+        document.querySelector('#scale-indicator').innerText = scale.toFixed(2);
+    });
+}
+
+async function loadInitialStyle() {
+    const styleUrl = `https://vapi.bleeding.mapcreator.io/styles/Base%20Cartotest1.json?access_token=${accessToken}`;
+    const styleName = 'Base Cartotest1';
+
+    addStyle(styleName, await fetch(styleUrl).then(response => response.json()));
+}
+
+function addStyle(name, style) {
+    styles.push({ name, style }) - 1;
+}
+
+function switchStyle(index) {
+    styleIndex = index;
+
+    const style = styles[styleIndex].style;
+    const newStyle = { ...style };
+
+    newStyle.layers = newStyle.layers.filter(layer => !disabledLayers.has(layer.id));
+
+    window.map.setStyle(newStyle);
 }
 
 function rerenderLayers() {
+    layersDimmed = false;
+
     layersContainer.innerHTML = getLayersHtml();
 
     document.querySelectorAll('.layer').forEach(element => {
@@ -76,13 +123,14 @@ function rerenderLayers() {
             }
 
             dimLayers();
-            updateLayers();
+            switchStyle(styleIndex);
         });
     });
 }
 
 function getLayersHtml() {
     const { vtxCounts } = window;
+    const style = styles[styleIndex].style;
 
     const layers = style.layers.map(layer => {
         return {
@@ -101,13 +149,13 @@ function getLayersHtml() {
     let html = '';
 
     if (disabled.length > 0) {
-        html += `<div class="layers-header">Disabled Layers</div>`;
+        html += `<div class="layers-header">Disabled Nodes</div>`;
     }
 
     html += disabled.map(layer => getLayerHtml(layer, maxVtxCount)).join('');
 
     if (enabled.length > 0) {
-        html += `<div class="layers-header">Enabled Layers</div>`;
+        html += `<div class="layers-header">Enabled Nodes</div>`;
     }
 
     html += enabled.map(layer => getLayerHtml(layer, maxVtxCount)).join('');
@@ -131,21 +179,40 @@ function getLayerHtml(layer, maxVtxCount) {
     `;
 }
 
+function rerenderStyles() {
+    stylesContainer.innerHTML = styles.map((style, index) => getStyleHtml(index)).join('');
+
+    document.querySelectorAll('.mapstyle-button.select').forEach(element => {
+        element.addEventListener('click', () => {
+            const index = Number(element.dataset.index);
+            dimLayers();
+            switchStyle(index);
+            rerenderStyles();
+        });
+    });
+}
+
+function getStyleHtml(index) {
+    const style = styles[index];
+    const active = index === styleIndex ? 'active' : '';
+
+    return `
+        <div class="mapstyle-button select ${active}" data-index="${index}">${style.name}</div>
+    `;
+}
+
 function dimLayers() {
+    if (layersDimmed) {
+        return;
+    }
+
     const panel = document.querySelector('#layers');
 
     if (panel) {
         panel.style.opacity = 0.5;
         panel.style.pointerEvents = 'none';
+        layersDimmed = true;
     }
-}
-
-function updateLayers() {
-    const newStyle = { ...style };
-
-    newStyle.layers = newStyle.layers.filter(layer => !disabledLayers.has(layer.id));
-
-    map.setStyle(newStyle);
 }
 
 function getTotalVtxCount(vtxCounts) {
@@ -160,4 +227,19 @@ function getTotalVtxCount(vtxCounts) {
 
 function formatNumber(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+function transformResourceUrl(url) {
+    url = url.replace('maps4news.com', 'mapcreator.io');
+    url = url.replace(/vapi\.(mc-cdn|mapcreator)/, 'vapi.bleeding.$1');
+
+    if (isVapiUrl(url)) {
+        url = `${url}?access_token=${accessToken}`;
+    }
+
+    return url;
+}
+
+function isVapiUrl(url) {
+    return /vapi\..*(mc-cdn|mapcreator)\.io/.test(url);
 }

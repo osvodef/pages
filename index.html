@@ -15,6 +15,16 @@
     <body>
         <div id="map"></div>
         <div id="panel">
+            <div id="mapstyles">
+                <div class="layers-header">Mapstyles</div>
+                <div id="mapstyle-list"></div>
+                <label class="mapstyle-button add">
+                    <input type="file" id="add-mapstyle-input" />
+                    +
+                </label>
+            </div>
+            <div class="layers-header">Options</div>
+
             <div id="controls">
                 <div>
                     <input type="checkbox" id="tile-boundaries" name="tile-boundaries" checked />
@@ -29,6 +39,12 @@
                     <label for="overdraw-inspector">Show overdraw inspector</label>
                 </div>
             </div>
+            <div class="layers-header">Scale</div>
+            <div id="scale">
+                <input id="scale-input" type="range" min="1" max="4" value="1" , step="any" />
+                <div id="scale-indicator">1.00</div>
+            </div>
+
             <div id="layers-container"></div>
         </div>
 
