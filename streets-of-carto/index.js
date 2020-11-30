@@ -184,7 +184,7 @@ async function switchStyle(index) {
                 'filter': ['all', ['has', 'name'], ['any', ...filters]],
                 'layout': {},
                 'paint': {
-                    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 8, 4],
+                    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 4, 2],
                     'line-color': ['to-color', ['at', ['%', ['id'], 12], ['literal', colors]]],
                 },
             },
@@ -197,7 +197,7 @@ async function switchStyle(index) {
                 'layout': {},
                 'paint': {
                     'circle-color': ['to-color', ['at', ['%', ['id'], 12], ['literal', colors]]],
-                    'circle-radius': ['case', ['boolean', ['feature-state', 'hover'], false], 8, 4],
+                    'circle-radius': ['case', ['boolean', ['feature-state', 'hover'], false], 4, 2],
                 },
             }
         );
