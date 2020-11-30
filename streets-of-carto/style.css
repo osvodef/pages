@@ -89,7 +89,8 @@ body {
 #collision-boxes,
 #overdraw-inspector,
 #label-lines,
-#terrain {
+#terrain,
+#recalculate-spacing {
     cursor: pointer;
     margin: 0;
     vertical-align: middle;

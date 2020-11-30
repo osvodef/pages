@@ -23,6 +23,8 @@ let maxAngle = 45;
 let textPadding = 2;
 let showLabelLines = true;
 let showTerrain = false;
+let recalculateSpacingEnabled = false;
+let roadLayers = [];
 
 const colors = [
     '#a6cee3',
@@ -61,12 +63,14 @@ async function run() {
     switchStyle(0);
     rerenderStyles();
 
-    map.on('render', e => {
+    map.on('render', () => {
         const { vtxCounts, drawCount } = window;
 
         vtxPanel.update(getTotalVtxCount(vtxCounts), 10000000);
         drawPanel.update(drawCount, 1000);
     });
+
+    map.on('zoomend', () => recalculateSpacing());
 
     map.on('mouseover', 'street-label-axis', e => highlightFeature(e));
     map.on('mouseover', 'street-label-circle', e => highlightFeature(e));
@@ -104,6 +108,11 @@ async function run() {
     document.querySelector('#terrain').addEventListener('input', e => {
         showTerrain = e.target.checked;
         switchStyle(styleIndex);
+    });
+
+    document.querySelector('#recalculate-spacing').addEventListener('input', e => {
+        recalculateSpacingEnabled = e.target.checked;
+        recalculateSpacing();
     });
 
     document.querySelector('#symbol-spacing').addEventListener('change', async e => {
@@ -155,17 +164,17 @@ async function switchStyle(index) {
     const style = styles[styleIndex].style;
     const newStyle = JSON.parse(JSON.stringify(style));
 
-    const roadLayers = newStyle.layers.filter(layer => isRoadLayer(layer));
+    roadLayers = newStyle.layers.filter(layer => isRoadLayer(layer));
 
     for (layer of roadLayers) {
-        layer.layout['symbol-spacing'] = symbolSpacing;
+        layer.layout['symbol-spacing'] = getCorrectedSpacing();
         layer.layout['text-max-angle'] = maxAngle;
         layer.layout['text-padding'] = textPadding;
     }
 
     if (!showTerrain) {
         newStyle.layers = newStyle.layers.filter(
-            layer => isRoadLayer(layer) || layer.id === 'mc-before-names'
+            layer => isRoadLayer(layer) || layer.id === 'mc-before-names',
         );
     }
 
@@ -199,7 +208,7 @@ async function switchStyle(index) {
                     'circle-color': ['to-color', ['at', ['%', ['id'], 12], ['literal', colors]]],
                     'circle-radius': ['case', ['boolean', ['feature-state', 'hover'], false], 4, 2],
                 },
-            }
+            },
         );
     }
 
@@ -285,7 +294,7 @@ function highlightFeature(e) {
         },
         {
             hover: true,
-        }
+        },
     );
 }
 
@@ -297,4 +306,25 @@ function removeHighlight() {
         source: 'mc-base',
         sourceLayer: 'lines',
     });
+}
+
+function recalculateSpacing() {
+    const { map } = window;
+
+    const spacing = getCorrectedSpacing();
+
+    for (const layer of roadLayers) {
+        map.setLayoutProperty(layer.id, 'symbol-spacing', spacing);
+    }
+}
+
+function getCorrectedSpacing() {
+    if (!recalculateSpacingEnabled) {
+        return symbolSpacing;
+    }
+
+    const zoom = map.getZoom();
+    const fractionalZoom = zoom - Math.floor(zoom);
+
+    return Math.max(symbolSpacing / Math.pow(2, fractionalZoom), 1);
 }
