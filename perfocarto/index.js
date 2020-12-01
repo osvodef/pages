@@ -22,7 +22,7 @@ window.drawCount = 0;
 run();
 
 async function run() {
-    await loadInitialStyle();
+    await loadInitialStyles();
 
     mapboxgl.accessToken = mapboxAccessToken;
 
@@ -38,7 +38,7 @@ async function run() {
 
     window.map = map;
 
-    switchStyle(0);
+    switchStyle(styles.length - 1);
     rerenderStyles();
 
     map.on('render', e => {
@@ -85,11 +85,29 @@ async function run() {
     });
 }
 
-async function loadInitialStyle() {
-    const styleUrl = `https://vapi.bleeding.mapcreator.io/styles/Base%20Cartotest1.json?access_token=${accessToken}`;
-    const styleName = 'Base Cartotest1';
+async function loadInitialStyles() {
+    const styles = [
+        {
+            name: 'Base Carto',
+            url: `https://vapi.bleeding.mapcreator.io/styles/Base%20Carto.json?access_token=${accessToken}`,
+        },
+        {
+            name: 'Base Cartotest1',
+            url: `https://vapi.bleeding.mapcreator.io/styles/Base%20Cartotest1.json?access_token=${accessToken}`,
+        },
+        {
+            name: 'Base Cartotest2',
+            url: `https://vapi.bleeding.mapcreator.io/styles/Base%20Cartotest2.json?access_token=${accessToken}`,
+        },
+    ];
 
-    addStyle(styleName, await fetch(styleUrl).then(response => response.json()));
+    const jsons = await Promise.all(
+        styles.map(style => fetch(style.url).then(response => response.json())),
+    );
+
+    for (let i = 0; i < styles.length; i++) {
+        addStyle(styles[i].name, jsons[i]);
+    }
 }
 
 function addStyle(name, style) {
