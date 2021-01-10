@@ -88,16 +88,8 @@ async function run() {
 async function loadInitialStyles() {
     const styles = [
         {
-            name: 'Base Carto',
-            url: `https://vapi.bleeding.mapcreator.io/styles/Base%20Carto.json?access_token=${accessToken}`,
-        },
-        {
-            name: 'Base Cartotest1',
-            url: `https://vapi.bleeding.mapcreator.io/styles/Base%20Cartotest1.json?access_token=${accessToken}`,
-        },
-        {
-            name: 'Base Cartotest2',
-            url: `https://vapi.bleeding.mapcreator.io/styles/Base%20Cartotest2.json?access_token=${accessToken}`,
+            name: 'Base Carto (latest)',
+            url: `https://vapi.mc-cdn.io/styles/Base%20Carto.json?access_token=${accessToken}`,
         },
     ];
 
@@ -111,7 +103,7 @@ async function loadInitialStyles() {
 }
 
 function addStyle(name, style) {
-    styles.push({ name, style }) - 1;
+    styles.push({ name, style });
 }
 
 function switchStyle(index) {
@@ -248,9 +240,6 @@ function formatNumber(x) {
 }
 
 function transformResourceUrl(url) {
-    url = url.replace('maps4news.com', 'mapcreator.io');
-    url = url.replace(/vapi\.(mc-cdn|mapcreator)/, 'vapi.bleeding.$1');
-
     if (isVapiUrl(url)) {
         url = `${url}?access_token=${accessToken}`;
     }
