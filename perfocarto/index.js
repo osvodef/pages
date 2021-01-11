@@ -10,6 +10,9 @@ const styles = [];
 let styleIndex = 0;
 let layersDimmed = false;
 
+let minVertices = 3;
+let minArea = 0;
+
 const stats = new window.Stats();
 const vtxPanel = stats.addPanel(new window.Stats.Panel('vtx', '#f8f', '#212'));
 const drawPanel = stats.addPanel(new window.Stats.Panel('dc', '#ff8', '#221'));
@@ -81,7 +84,27 @@ async function run() {
     document.querySelector('#scale-input').addEventListener('input', e => {
         const scale = Number(e.target.value);
         map.setScale(scale);
-        document.querySelector('#scale-indicator').innerText = scale.toFixed(2);
+        document.querySelector('.indicator.scale').innerText = scale.toFixed(2);
+    });
+
+    const debouncedReset = debounce(() => switchStyle(styleIndex, { diff: false }), 500);
+
+    document.querySelector('.slider.min-vertices').addEventListener('input', e => {
+        const value = Number(e.target.value);
+        document.querySelector('.indicator.min-vertices').innerText = value;
+        minVertices = value;
+
+        dimLayers();
+        debouncedReset();
+    });
+
+    document.querySelector('.slider.min-area').addEventListener('input', e => {
+        const value = Number(e.target.value);
+        document.querySelector('.indicator.min-area').innerText = value.toFixed(0);
+        minArea = value;
+
+        dimLayers();
+        debouncedReset();
     });
 }
 
@@ -106,7 +129,7 @@ function addStyle(name, style) {
     styles.push({ name, style });
 }
 
-function switchStyle(index) {
+function switchStyle(index, options) {
     styleIndex = index;
 
     const style = styles[styleIndex].style;
@@ -114,7 +137,7 @@ function switchStyle(index) {
 
     newStyle.layers = newStyle.layers.filter(layer => !disabledLayers.has(layer.id));
 
-    window.map.setStyle(newStyle);
+    window.map.setStyle(newStyle, options);
 }
 
 function rerenderLayers() {
@@ -249,4 +272,34 @@ function transformResourceUrl(url) {
 
 function isVapiUrl(url) {
     return /vapi\..*(mc-cdn|mapcreator)\.io/.test(url);
+}
+
+function debounce(func, wait, immediate) {
+    let timeout;
+
+    const out = (...args) => {
+        const later = () => {
+            timeout = undefined;
+
+            if (!immediate) func(...args);
+        };
+
+        const callNow = immediate && typeof timeout === 'undefined';
+
+        if (typeof timeout !== 'undefined') {
+            clearTimeout(timeout);
+        }
+
+        timeout = setTimeout(later, wait);
+
+        if (callNow) func(...args);
+    };
+
+    out.cancel = () => {
+        clearTimeout(timeout);
+
+        timeout = undefined;
+    };
+
+    return out;
 }

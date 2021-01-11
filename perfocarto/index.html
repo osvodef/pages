@@ -25,7 +25,7 @@
             </div>
             <div class="layers-header">Options</div>
 
-            <div id="controls">
+            <div class="controls">
                 <div>
                     <input type="checkbox" id="tile-boundaries" name="tile-boundaries" checked />
                     <label for="tile-boundaries">Show tile boundaries</label>
@@ -39,10 +39,39 @@
                     <label for="overdraw-inspector">Show overdraw inspector</label>
                 </div>
             </div>
+
+            <div class="layers-header">Polygon Limits</div>
+            <div class="caption">Min vertices</div>
+            <div class="controls range">
+                <input class="slider min-vertices" type="range" min="3" max="100" value="1" />
+                <div class="indicator min-vertices">3</div>
+            </div>
+
+            <div class="caption">Min area</div>
+            <div class="controls range">
+                <input
+                    class="slider min-area"
+                    type="range"
+                    min="0"
+                    max="9999"
+                    value="1"
+                    step="any"
+                />
+                <div class="indicator min-area">0</div>
+            </div>
+
             <div class="layers-header">Scale</div>
-            <div id="scale">
-                <input id="scale-input" type="range" min="1" max="4" value="1" , step="any" />
-                <div id="scale-indicator">1.00</div>
+            <div class="controls range">
+                <input
+                    class="slider"
+                    id="scale-input"
+                    type="range"
+                    min="1"
+                    max="4"
+                    value="1"
+                    step="any"
+                />
+                <div class="indicator scale">1.00</div>
             </div>
 
             <div id="layers-container"></div>

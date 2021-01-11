@@ -56,19 +56,27 @@ body {
     display: none;
 }
 
-#controls,
-#scale {
+.caption {
+    margin: 10px 0 -5px 10px;
+}
+
+.controls {
     padding: 10px;
 }
 
-#scale {
+.controls.range {
     display: flex;
 }
 
-#scale-input {
+.slider {
     cursor: pointer;
     flex-grow: 1;
     margin-right: 10px;
+}
+
+.indicator {
+    width: 35px;
+    text-align: right;
 }
 
 .layers-header {
