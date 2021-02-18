@@ -37,6 +37,68 @@ const formations = [
         [6, 4],
         [7, 4],
     ],
+    [
+        [2, 0],
+        [2, 1],
+        [2, 2],
+        [2, 3],
+        [2, 4],
+        [0, 2],
+        [1, 2],
+        [3, 2],
+        [4, 2],
+        [0, 6],
+        [1, 6],
+        [2, 6],
+        [3, 6],
+        [4, 6],
+    ],
+    [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [0, 2],
+        [1, 2],
+        [2, 2],
+        [3, 2],
+        [4, 2],
+        [0, 4],
+        [1, 4],
+        [2, 4],
+        [3, 4],
+        [4, 4],
+    ],
+    [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [2, 1],
+        [2, 2],
+        [2, 3],
+        [2, 4],
+        [0, 1],
+        [4, 1],
+    ],
+    [
+        [0, 0],
+        [0, 1],
+        [0, 2],
+        [1, 0],
+        [1, 1],
+        [1, 2],
+        [2, 0],
+        [2, 1],
+        [2, 2],
+        [1, 3],
+        [1, 4],
+        [1, 5],
+        [1, 6],
+        [1, 7]
+    ]
 ];
 
 const container = document.querySelector('.container');
@@ -83,7 +145,7 @@ function apply(formationIndex) {
 
     for (let i = 0; i < 16; i++) {
         const cell = cells[i];
-        const point = formation[i];
+        const point = formation[i % formation.length];
 
         const x = offsetX + point[0] * cellSize;
         const y = offsetY + point[1] * cellSize;
@@ -121,5 +183,5 @@ setTimeout(() => {
 }, 0);
 
 container.addEventListener('click', () => {
-    apply((currentFormationIndex + 1) % formations.length);
+    apply(Math.floor(Math.random() * formations.length));
 });
