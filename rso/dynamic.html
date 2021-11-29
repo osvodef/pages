@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Responsive Static Output</title>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, height=device-height, initial-scale=1, user-scalable=no"
+        />
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Courier New', Courier, monospace;
+            }
+
+            .width-indicator {
+                position: fixed;
+                top: 0;
+                right: 0;
+                border-left: 1px solid #777;
+                border-bottom: 1px solid #777;
+                width: 250px;
+                height: 25px;
+                line-height: 25px;
+                padding-left: 5px;
+                border-bottom-left-radius: 5px;
+                background-color: #fff;
+                user-select: none;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 1000px;
+                margin: 0 auto;
+                border-left: 1px solid #777;
+                border-right: 1px solid #777;
+                padding-bottom: 25px;
+            }
+
+            .no-scale {
+                display: block;
+                margin: auto;
+            }
+
+            .pic {
+                width: 100%;
+            }
+
+            .code {
+                width: 100%;
+                height: 100px;
+            }
+
+            .copy-button {
+                color: #007bab;
+                text-decoration: dotted;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="width-indicator"></div>
+        <div class="container">
+            <div>
+                This page illustrates two possible approaches to responsive dynamic map scaling. The
+                page has a horizontally centered container that has a width of 1000px and gets
+                smaller if you decrease the browser window width. This is a type of layout most
+                commonly found on news websites. To view the scaling in action, resize your browser
+                window (or use Chrome Dev Tools to simulate different devices).
+            </div>
+            <div class="example">
+                <h1>Direct scaling</h1>
+                <div style="position: relative; height: 0; padding-bottom: 66.66666666666666%">
+                    <iframe
+                        style="width: 100%; height: 100%; border: 0; position: absolute"
+                        src="https://review-scaling-ex-cj9q1b.dynamic.sub.mapcreator.io/?id=aa764bd9cae896f536a1720f6b3c4bd5&access-token=Fcl36Sb9lU5ynhsN8ofA47SqaVDPAlnG5b669b1f243a48e40fd719fef7b80ecbe75a54da#scale"
+                        allow="geolocation"
+                        allowfullscreen
+                    ></iframe>
+                </div>
+                <p>
+                    This is the approach currently used by Mapcreator dynamic maps. If the map’s
+                    container is smaller or larger than it’s original size, it gets scaled so that
+                    its initial viewport is preserved. This kind of scaling simply changes the size
+                    of the map and any object that it contains (i.e. labels, markers, textboxes
+                    etc.) without changing its look in any other way.
+                </p>
+                <p>
+                    The downside of this approach is that if the map get scaled down too much, its
+                    labels become too small to be readable.
+                </p>
+            </div>
+            <div class="example">
+                <h1>Zoom level adjustment</h1>
+                <div style="position: relative; height: 0; padding-bottom: 66.66666666666666%">
+                    <iframe
+                        style="width: 100%; height: 100%; border: 0; position: absolute"
+                        src="https://review-scaling-ex-cj9q1b.dynamic.sub.mapcreator.io/?id=aa764bd9cae896f536a1720f6b3c4bd5&access-token=Fcl36Sb9lU5ynhsN8ofA47SqaVDPAlnG5b669b1f243a48e40fd719fef7b80ecbe75a54da#zoom"
+                        allow="geolocation"
+                        allowfullscreen
+                    ></iframe>
+                </div>
+                <p>
+                    This approach, instead scaling the map directly, adjusts its zoom level. This
+                    solves the problem of small unreadable labels on smaller screens. Unlike the
+                    previous approach, the map contents here are actually changing: a different zoom
+                    level can mean different level of detail, different placement of labels, etc.
+                    This could lead to potential side effects like important objects/labels not
+                    being displayed on smaller sizes or added markers overlapping with each other or
+                    going out of map bounds.
+                </p>
+            </div>
+        </div>
+        <script>
+            updateSizeIndicator();
+
+            window.addEventListener('resize', () => updateSizeIndicator());
+
+            function updateSizeIndicator() {
+                const width = document.querySelector('.container').clientWidth;
+                document.querySelector(
+                    '.width-indicator',
+                ).innerHTML = `Container width: ${width}px`;
+            }
+        </script>
+    </body>
+</html>
