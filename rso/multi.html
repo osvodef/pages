@@ -34,6 +34,8 @@
                 width: 100%;
                 max-width: 1000px;
                 margin: 0 auto;
+                border-left: 1px solid #777;
+                border-right: 1px solid #777;
             }
 
             .no-scale {
@@ -49,13 +51,13 @@
     <body>
         <div class="width-indicator"></div>
         <div class="container">
-            <p>
+            <div>
                 This page contains prototypes of multi-image approaches to create more responsive
                 maps. It has a horizontally centered container that has a width of 1000px and gets
                 smaller if you decrease the browser window width. This is a type of layout most
                 commonly found on news websites. To view the scaling in action, resize your browser
                 window (or use Chrome Dev Tools to simulate different devices).
-            </p>
+            </div>
             <div class="example">
                 <h1>Multi-SVG</h1>
                 <div class="multi-svg">
@@ -113,7 +115,7 @@
             function updateSizeIndicator() {
                 const width = document.querySelector('.container').clientWidth;
                 document.querySelector(
-                    '.width-indicator'
+                    '.width-indicator',
                 ).innerHTML = `Container width: ${width}px`;
             }
 
@@ -125,7 +127,7 @@
                 const selectedLod = clamp(
                     Math.ceil(Math.log(baseWidth / width) / Math.LN2),
                     0,
-                    lodCount - 1
+                    lodCount - 1,
                 );
 
                 const svgs = document.querySelector('.multi-svg').querySelectorAll('.pic');

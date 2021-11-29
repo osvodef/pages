@@ -34,6 +34,8 @@
                 width: 100%;
                 max-width: 1000px;
                 margin: 0 auto;
+                border-left: 1px solid #777;
+                border-right: 1px solid #777;
             }
 
             .example {
@@ -58,14 +60,14 @@
     <body>
         <div class="width-indicator"></div>
         <div class="container">
-            <p>
+            <div>
                 This page contains prototypes of the most primitive approaches to create more
                 responsive maps using a single static image. The page has a horizontally centered
                 container that has a width of 1000px and gets smaller if you decrease the browser
                 window width. This is a type of layout most commonly found on news websites. To view
                 the scaling in action, resize your browser window (or use Chrome Dev Tools to
                 simulate different devices).
-            </p>
+            </div>
             <div class="example">
                 <h1>Simple PNG (no scaling)</h1>
                 <img class="no-scale" src="./assets/basic-png.png" />
@@ -119,12 +121,12 @@
                 window.addEventListener('resize', () => updateSizeIndicator());
 
                 const directSvg = await fetch('./assets/basic-svg.svg').then(response =>
-                    response.text()
+                    response.text(),
                 );
                 document.querySelector('#direct-svg').innerText = directSvg;
 
                 const base64Svg = await fetch('./assets/base64-code.txt').then(response =>
-                    response.text()
+                    response.text(),
                 );
                 document.querySelector('#base64-svg').innerText = base64Svg;
             }
@@ -132,7 +134,7 @@
             function updateSizeIndicator() {
                 const width = document.querySelector('.container').clientWidth;
                 document.querySelector(
-                    '.width-indicator'
+                    '.width-indicator',
                 ).innerHTML = `Container width: ${width}px`;
             }
         </script>
