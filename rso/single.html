@@ -8,6 +8,10 @@
             content="width=device-width, height=device-height, initial-scale=1, user-scalable=no"
         />
         <style>
+            * {
+                box-sizing: border-box;
+            }
+
             html,
             body {
                 margin: 0;
@@ -36,10 +40,7 @@
                 margin: 0 auto;
                 border-left: 1px solid #777;
                 border-right: 1px solid #777;
-            }
-
-            .example {
-                margin-bottom: 75px;
+                padding-bottom: 25px;
             }
 
             .no-scale {
@@ -54,6 +55,12 @@
             .code {
                 width: 100%;
                 height: 100px;
+            }
+
+            .copy-button {
+                color: #007bab;
+                text-decoration: dotted;
+                cursor: pointer;
             }
         </style>
     </head>
@@ -108,8 +115,10 @@
                 </p>
                 <p>Directly embedded SVG:</p>
                 <textarea readonly class="code" id="direct-svg"></textarea>
+                <a class="copy-button" data-type="direct">(copy to clipboard)</a>
                 <p>&lt;img&gt; tag with base64-encoded SVG:</p>
                 <textarea readonly class="code" id="base64-svg"></textarea>
+                <a class="copy-button" data-type="base64">(copy to clipboard)</a>
             </div>
         </div>
         <script>
@@ -120,15 +129,29 @@
 
                 window.addEventListener('resize', () => updateSizeIndicator());
 
-                const directSvg = await fetch('./assets/basic-svg.svg').then(response =>
-                    response.text(),
-                );
-                document.querySelector('#direct-svg').innerText = directSvg;
+                const svg = await fetch('./assets/basic-svg.svg').then(response => response.text());
 
-                const base64Svg = await fetch('./assets/base64-code.txt').then(response =>
-                    response.text(),
-                );
-                document.querySelector('#base64-svg').innerText = base64Svg;
+                const directCode = document.querySelector('#direct-svg');
+                const base64Code = document.querySelector('#base64-svg');
+
+                directCode.innerText = svg;
+                base64Code.innerText = wrapSvg(svg);
+
+                const copyButtons = document.querySelectorAll('.copy-button');
+
+                for (const button of copyButtons) {
+                    button.addEventListener('click', () => {
+                        navigator.clipboard.writeText(
+                            button.dataset.type === 'direct' ? directCode.value : base64Code.value,
+                        );
+
+                        button.innerText = '(copied to clipboard)';
+
+                        setTimeout(() => {
+                            button.innerText = '(copy to clipboard)';
+                        }, 1000);
+                    });
+                }
             }
 
             function updateSizeIndicator() {
@@ -136,6 +159,11 @@
                 document.querySelector(
                     '.width-indicator',
                 ).innerHTML = `Container width: ${width}px`;
+            }
+
+            function wrapSvg(svg) {
+                const base64 = btoa(unescape(encodeURIComponent(svg)));
+                return `<img style="display: block; width: 100%" src="data:image/svg+xml;base64,${base64}" />`;
             }
         </script>
     </body>

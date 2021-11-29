@@ -8,6 +8,10 @@
             content="width=device-width, height=device-height, initial-scale=1, user-scalable=no"
         />
         <style>
+            * {
+                box-sizing: border-box;
+            }
+
             html,
             body {
                 margin: 0;
@@ -36,6 +40,7 @@
                 margin: 0 auto;
                 border-left: 1px solid #777;
                 border-right: 1px solid #777;
+                padding-bottom: 25px;
             }
 
             .no-scale {
@@ -45,6 +50,17 @@
 
             .pic {
                 width: 100%;
+            }
+
+            .code {
+                width: 100%;
+                height: 100px;
+            }
+
+            .copy-button {
+                color: #007bab;
+                text-decoration: dotted;
+                cursor: pointer;
             }
         </style>
     </head>
@@ -83,6 +99,9 @@
                     Also, in the smallest map the markers added by the user start interlapping with
                     each other.
                 </p>
+                <p>To embed a multi-svg, add the following HTML code to your page:</p>
+                <textarea readonly class="code" id="multi-svg-code"></textarea>
+                <a class="copy-button" data-type="svg">(copy to clipboard)</a>
             </div>
             <div class="example">
                 <h1>Multi-PNG</h1>
@@ -97,56 +116,11 @@
                     blurry images, we can’t make the map match the container width exactly. Also,
                     these maps still look blurry on retina screens.
                 </p>
+                <p>Use the following HTML to embed a multi-png:</p>
+                <textarea readonly class="code" id="multi-png-code"></textarea>
+                <a class="copy-button" data-type="png">(copy to clipboard)</a>
             </div>
         </div>
-        <script>
-            run();
-
-            async function run() {
-                updateSizeIndicator();
-                updateLod();
-
-                window.addEventListener('resize', () => {
-                    updateSizeIndicator();
-                    updateLod();
-                });
-            }
-
-            function updateSizeIndicator() {
-                const width = document.querySelector('.container').clientWidth;
-                document.querySelector(
-                    '.width-indicator',
-                ).innerHTML = `Container width: ${width}px`;
-            }
-
-            function updateLod() {
-                const width = document.querySelector('.container').clientWidth;
-                const lodCount = 3;
-                const baseWidth = 750;
-
-                const selectedLod = clamp(
-                    Math.ceil(Math.log(baseWidth / width) / Math.LN2),
-                    0,
-                    lodCount - 1,
-                );
-
-                const svgs = document.querySelector('.multi-svg').querySelectorAll('.pic');
-                const pngs = document.querySelector('.multi-png').querySelectorAll('.no-scale');
-
-                for (let i = 0; i < lodCount; i++) {
-                    if (i === selectedLod) {
-                        svgs[i].style.display = 'block';
-                        pngs[i].style.display = 'block';
-                    } else {
-                        svgs[i].style.display = 'none';
-                        pngs[i].style.display = 'none';
-                    }
-                }
-            }
-
-            function clamp(value, min, max) {
-                return Math.min(max, Math.max(min, value));
-            }
-        </script>
+        <script src="./multi.js"></script>
     </body>
 </html>
