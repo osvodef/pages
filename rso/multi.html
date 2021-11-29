@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Responsive Static Output</title>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, height=device-height, initial-scale=1, user-scalable=no"
+        />
+        <style>
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Courier New', Courier, monospace;
+            }
+
+            .width-indicator {
+                position: fixed;
+                top: 0;
+                right: 0;
+                border-left: 1px solid #777;
+                border-bottom: 1px solid #777;
+                width: 250px;
+                height: 25px;
+                line-height: 25px;
+                padding-left: 5px;
+                border-bottom-left-radius: 5px;
+                background-color: #fff;
+                user-select: none;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+
+            .no-scale {
+                display: block;
+                margin: auto;
+            }
+
+            .pic {
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="width-indicator"></div>
+        <div class="container">
+            <p>
+                This page contains prototypes of multi-image approaches to create more responsive
+                maps. It has a horizontally centered container that has a width of 1000px and gets
+                smaller if you decrease the browser window width. This is a type of layout most
+                commonly found on news websites. To view the scaling in action, resize your browser
+                window (or use Chrome Dev Tools to simulate different devices).
+            </p>
+            <div class="example">
+                <h1>Multi-SVG</h1>
+                <div class="multi-svg">
+                    <img class="pic" src="./assets/svg-750.svg" style="display: none" />
+                    <img class="pic" src="./assets/svg-375.svg" style="display: none" />
+                    <img class="pic" src="./assets/svg-188.svg" style="display: none" />
+                </div>
+                <p>
+                    In this example, the same map is generated for three widths: 750px, 375px,
+                    188px. Each next width is exactly 2x smaller than the previous ones. To preserve
+                    the viewport, each reduced map is generated at 1 zoom level lower than the
+                    previous one. There is a script that selects the appropriate level of detail
+                    based on container width.
+                </p>
+                <p>
+                    This eliminates the problem that the labels are unreadable when the SVG is
+                    downscaled too much. Also, since the images are SVGs, they stay sharp on retina
+                    screens as well.
+                </p>
+                <p>
+                    A downside of this approach is that changing the zoom level significantly
+                    changes the map. Reduced versions have less labels, less detailed geometries.
+                    Also, in the smallest map the markers added by the user start interlapping with
+                    each other.
+                </p>
+            </div>
+            <div class="example">
+                <h1>Multi-PNG</h1>
+                <div class="multi-png">
+                    <img class="no-scale" src="./assets/png-750.png" style="display: none" />
+                    <img class="no-scale" src="./assets/png-375.png" style="display: none" />
+                    <img class="no-scale" src="./assets/png-188.png" style="display: none" />
+                </div>
+                <p>
+                    This is the same as multi-svg, but with pngs instead of svg. Compared to the
+                    svgs, this approach has a few downsides. Firstly, since scaling pngs results in
+                    blurry images, we can’t make the map match the container width exactly. Also,
+                    these maps still look blurry on retina screens.
+                </p>
+            </div>
+        </div>
+        <script>
+            run();
+
+            async function run() {
+                updateSizeIndicator();
+                updateLod();
+
+                window.addEventListener('resize', () => {
+                    updateSizeIndicator();
+                    updateLod();
+                });
+            }
+
+            function updateSizeIndicator() {
+                const width = document.querySelector('.container').clientWidth;
+                document.querySelector(
+                    '.width-indicator'
+                ).innerHTML = `Container width: ${width}px`;
+            }
+
+            function updateLod() {
+                const width = document.querySelector('.container').clientWidth;
+                const lodCount = 3;
+                const baseWidth = 750;
+
+                const selectedLod = clamp(
+                    Math.ceil(Math.log(baseWidth / width) / Math.LN2),
+                    0,
+                    lodCount - 1
+                );
+
+                const svgs = document.querySelector('.multi-svg').querySelectorAll('.pic');
+                const pngs = document.querySelector('.multi-png').querySelectorAll('.no-scale');
+
+                for (let i = 0; i < lodCount; i++) {
+                    if (i === selectedLod) {
+                        svgs[i].style.display = 'block';
+                        pngs[i].style.display = 'block';
+                    } else {
+                        svgs[i].style.display = 'none';
+                        pngs[i].style.display = 'none';
+                    }
+                }
+            }
+
+            function clamp(value, min, max) {
+                return Math.min(max, Math.max(min, value));
+            }
+        </script>
+    </body>
+</html>

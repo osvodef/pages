@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Responsive Static Output</title>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, height=device-height, initial-scale=1, user-scalable=no"
+        />
+        <style>
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Courier New', Courier, monospace;
+            }
+
+            .width-indicator {
+                position: fixed;
+                top: 0;
+                right: 0;
+                border-left: 1px solid #777;
+                border-bottom: 1px solid #777;
+                width: 250px;
+                height: 25px;
+                line-height: 25px;
+                padding-left: 5px;
+                border-bottom-left-radius: 5px;
+                background-color: #fff;
+                user-select: none;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+
+            .example {
+                margin-bottom: 75px;
+            }
+
+            .no-scale {
+                display: block;
+                margin: auto;
+            }
+
+            .pic {
+                width: 100%;
+            }
+
+            .code {
+                width: 100%;
+                height: 100px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="width-indicator"></div>
+        <div class="container">
+            <p>
+                This page contains prototypes of the most primitive approaches to create more
+                responsive maps using a single static image. The page has a horizontally centered
+                container that has a width of 1000px and gets smaller if you decrease the browser
+                window width. This is a type of layout most commonly found on news websites. To view
+                the scaling in action, resize your browser window (or use Chrome Dev Tools to
+                simulate different devices).
+            </p>
+            <div class="example">
+                <h1>Simple PNG (no scaling)</h1>
+                <img class="no-scale" src="./assets/basic-png.png" />
+                <p>
+                    This is a simple PNG image embedded on a page. The size of the map is 750x500px.
+                    It is always displayed at its own native resolution regardless of the container
+                    size.
+                </p>
+                <p>
+                    This map always looks sharp (except for retina displays where it has to be
+                    scaled up for the increased pixel density), but is not responsive at all, so on
+                    smaller phone screens it’s going to be cropped.
+                </p>
+            </div>
+            <div class="example">
+                <h1>Simple PNG (scaling)</h1>
+                <img class="pic" src="./assets/basic-png.png" />
+                <p>
+                    This is the same PNG, but it is forced to scale to match the width of the user’s
+                    screen.
+                </p>
+                <p>
+                    This map is responsive, but it will only look sharp when the container width is
+                    exactly 750px. Again, it won’t appear sharp at all on retina screens.
+                </p>
+            </div>
+            <div class="example">
+                <h1>Simple SVG</h1>
+                <img class="pic" src="./assets/basic-svg.svg" />
+                <p>
+                    This is the same map, but in SVG format instead of PNG. It scales in the same
+                    way as the PNG one. This map looks sharp on all kinds of screens unless it’s
+                    extremely downscaled and the labels become too small to be readable.
+                </p>
+                <p>
+                    There are several ways to embed an SVG to a website. These code snippets can be
+                    copied and pasted to your page to embed the image.
+                </p>
+                <p>Directly embedded SVG:</p>
+                <textarea readonly class="code" id="direct-svg"></textarea>
+                <p>&lt;img&gt; tag with base64-encoded SVG:</p>
+                <textarea readonly class="code" id="base64-svg"></textarea>
+            </div>
+        </div>
+        <script>
+            run();
+
+            async function run() {
+                updateSizeIndicator();
+
+                window.addEventListener('resize', () => updateSizeIndicator());
+
+                const directSvg = await fetch('./assets/basic-svg.svg').then(response =>
+                    response.text()
+                );
+                document.querySelector('#direct-svg').innerText = directSvg;
+
+                const base64Svg = await fetch('./assets/base64-code.txt').then(response =>
+                    response.text()
+                );
+                document.querySelector('#base64-svg').innerText = base64Svg;
+            }
+
+            function updateSizeIndicator() {
+                const width = document.querySelector('.container').clientWidth;
+                document.querySelector(
+                    '.width-indicator'
+                ).innerHTML = `Container width: ${width}px`;
+            }
+        </script>
+    </body>
+</html>
