@@ -97,8 +97,8 @@ const formations = [
         [1, 4],
         [1, 5],
         [1, 6],
-        [1, 7]
-    ]
+        [1, 7],
+    ],
 ];
 
 const container = document.querySelector('.container');
@@ -173,7 +173,7 @@ function shuffle(array) {
     return array;
 }
 
-apply(0);
+apply(1);
 
 setTimeout(() => {
     for (const cell of cells) {
